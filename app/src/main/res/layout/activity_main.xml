@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/white"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10sp"
+            android:text="Tô Màu Pixel"
+            android:textSize="18sp"
+            android:gravity="start"/>
+
+        <!-- LinearLayout chứa checkButton và progress -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- LinearLayout chứa ProgressBar và TextView -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="100dp"
+                    android:layout_height="10dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="#42DE1F"/>
+
+                <TextView
+                    android:id="@+id/progressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="0%"
+                    android:textSize="12sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/checkButton"-->
+<!--                android:layout_width="40dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:src="@drawable/check"-->
+<!--                android:background="@drawable/pixel_border"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                android:contentDescription="Kiểm tra hoàn thành"/>-->
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/gridContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:splitMotionEvents="false">
+
+        <GridView
+            android:id="@+id/pixelGrid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="auto_fit"
+            android:verticalSpacing="1dp"
+            android:horizontalSpacing="1dp"
+            android:stretchMode="columnWidth"/>
+    </FrameLayout>
+
+
+    <!-- Horizontal ScrollView cho color palette -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/clearButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/boder_color_palette"
+            app:srcCompat="@drawable/clear" />
+
+        <ImageButton
+            android:id="@+id/magicButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/boder_color_palette"
+            app:srcCompat="@drawable/magicbt" />
+
+        <ImageButton
+            android:id="@+id/drawingButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/boder_color_palette"
+            android:layout_marginLeft="10dp"
+            app:srcCompat="@drawable/drawing_roler" />
+
+
+        <ImageButton
+            android:id="@+id/changeBackgroundButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/boder_color_palette"
+            android:layout_marginLeft="10dp"
+            app:srcCompat="@drawable/background" />
+
+        <ImageButton
+            android:id="@+id/resetButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/boder_color_palette"
+            android:layout_marginLeft="10dp"
+            app:srcCompat="@drawable/reset_shrink" />
+
+        <ImageButton
+            android:id="@+id/checkButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/boder_color_palette"
+            android:layout_marginLeft="10dp"
+            app:srcCompat="@drawable/check" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/colorPalette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="5dp"/>
+        </HorizontalScrollView>
+
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        android:background="#CCCCCC"/>
+
+    <EditText
+        android:id="@+id/editPixelSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Pixel size "
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/editColorCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Color count"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/buttonChooseImage"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Choose Image"
+        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:background="@drawable/boder_color_palette"
+        app:backgroundTint="@null"/>
+
+    <Button
+        android:id="@+id/buttonPixelate"
+        android:layout_width="200dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:text="Pixelate"
+        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:background="@drawable/boder_color_palette"
+        app:backgroundTint="@null"/>
+    <Button
+        android:id="@+id/buttonSaveImage"
+        android:layout_width="200dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:text="Save Image"
+        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:background="@drawable/boder_color_palette"
+        app:backgroundTint="@null"/>
+</LinearLayout>
