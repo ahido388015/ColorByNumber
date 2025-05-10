@@ -1,13 +1,23 @@
 package com.example.nocolor
 
 import android.app.Dialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -22,8 +32,14 @@ import android.view.ScaleGestureDetector
 import android.view.Window
 import android.view.WindowManager
 import android.widget.FrameLayout.LayoutParams
+import androidx.core.app.ActivityCompat
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.abs
-
+import android.Manifest
+import androidx.core.graphics.drawable.DrawableCompat
 
 
 class MainActivity : AppCompatActivity() {
@@ -339,6 +355,21 @@ class MainActivity : AppCompatActivity() {
             gridContainer.pivotY = gridContainer.height / 2f
             Toast.makeText(this, "Đã đặt lại kích thước ban đầu", Toast.LENGTH_SHORT).show()
         }
+
+        // Thiết lập downButton
+        findViewById<ImageButton>(R.id.downButton).setOnClickListener {
+            if (checkArtCompletion()) {
+                if (checkStoragePermission()) {
+                    savePixelArtToGallery()
+                }
+            } else {
+                Toast.makeText(
+                    this,
+                    "Vui lòng hoàn thành bức tranh trước khi tải xuống!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -605,6 +636,152 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Hàm lưu ảnh pixel art vào thư viện ảnh
+    private fun savePixelArtToGallery() {
+        // Đảm bảo thực hiện trên luồng UI
+        Handler(Looper.getMainLooper()).post {
+            val bitmap = createBitmapFromData()
+            if (bitmap != null) {
+                saveBitmapToGallery(bitmap)
+            } else {
+                Toast.makeText(this, "Lỗi khi tạo ảnh!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Hàm tạo Bitmap từ dữ liệu pixel (không phụ thuộc vào GridView)
+    private fun createBitmapFromData(): Bitmap? {
+        // Tính kích thước dựa trên dữ liệu pixelArt
+        val cellSize = pixelAdapter.cellSize
+        if (cellSize <= 0) {
+            return null // Tránh trường hợp cellSize không hợp lệ
+        }
+
+        val width = pixelArt[0].size * cellSize
+        val height = pixelArt.size * cellSize
+
+        if (width <= 0 || height <= 0) {
+            return null
+        }
+
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Vẽ nền trắng
+        canvas.drawColor(Color.WHITE)
+
+        // Vẽ từng ô pixel dựa trên userPixels
+        for (row in pixelArt.indices) {
+            for (col in pixelArt[row].indices) {
+                val pixelValue = userPixels[row][col]
+                if (pixelValue != 0 && pixelValue <= colors.size) {
+                    val color = colors[pixelValue - 1]
+                    val paint = Paint().apply {
+                        this.color = color
+                        style = Paint.Style.FILL
+                    }
+                    val left = col * cellSize
+                    val top = row * cellSize
+                    canvas.drawRect(
+                        left.toFloat(),
+                        top.toFloat(),
+                        (left + cellSize).toFloat(),
+                        (top + cellSize).toFloat(),
+                        paint
+                    )
+                }
+            }
+        }
+
+        return bitmap
+    }
+
+    // Hàm lưu Bitmap vào thư viện ảnh
+    private fun saveBitmapToGallery(bitmap: Bitmap) {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val fileName = "PixelArt_$timeStamp.png"
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/PixelArt")
+            }
+        }
+
+        val resolver = contentResolver
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+        try {
+            uri?.let {
+                resolver.openOutputStream(it)?.use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                }
+                Toast.makeText(this, "Đã lưu ảnh vào thư viện!", Toast.LENGTH_SHORT).show()
+            } ?: throw IOException("Không thể tạo file media")
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Lỗi khi lưu ảnh!", Toast.LENGTH_SHORT).show()
+        } finally {
+            bitmap.recycle()
+        }
+    }
+
+    // Thêm hàm kiểm tra quyền
+    private fun checkStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            true // Không cần quyền trên Android 10+
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+                true
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    STORAGE_PERMISSION_CODE
+                )
+                false
+            }
+        }
+    }
+
+    // Thêm hằng số cho request code
+    companion object {
+        private const val STORAGE_PERMISSION_CODE = 1001
+    }
+
+    // Hàm kiểm tra hoàn thành tranh (không hiển thị dialog)
+    private fun checkArtCompletion(): Boolean {
+        for (i in pixelArt.indices) {
+            for (j in pixelArt[i].indices) {
+                if (pixelArt[i][j] != 0 && userPixels[i][j] == 0) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    // Xử lý kết quả yêu cầu quyền
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                savePixelArtToGallery()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Quyền truy cập bộ nhớ bị từ chối, không thể lưu ảnh",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
     inner class PixelAdapter : BaseAdapter() {
         var cellSize = 0
 
