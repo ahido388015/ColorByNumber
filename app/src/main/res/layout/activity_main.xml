@@ -99,24 +99,24 @@
 
         <ImageButton
             android:id="@+id/clearButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="12dp"
             android:background="@drawable/boder_color_palette"
             app:srcCompat="@drawable/clear" />
 
         <ImageButton
             android:id="@+id/magicButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="8dp"
             android:background="@drawable/boder_color_palette"
             app:srcCompat="@drawable/magicbt" />
 
         <ImageButton
             android:id="@+id/drawingButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/boder_color_palette"
             android:layout_marginLeft="8dp"
             app:srcCompat="@drawable/drawing_roler" />
@@ -124,35 +124,35 @@
 
         <ImageButton
             android:id="@+id/changeBackgroundButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/boder_color_palette"
             android:layout_marginLeft="8dp"
             app:srcCompat="@drawable/background" />
 
         <ImageButton
             android:id="@+id/resetButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/boder_color_palette"
             android:layout_marginLeft="8dp"
             app:srcCompat="@drawable/reset_shrink" />
 
         <ImageButton
             android:id="@+id/checkButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/boder_color_palette"
             android:layout_marginLeft="8dp"
             app:srcCompat="@drawable/check" />
 
         <ImageButton
             android:id="@+id/downButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/boder_color_palette"
             android:layout_marginLeft="8dp"
-            app:srcCompat="@drawable/check" />
+            app:srcCompat="@drawable/dowwnload" />
 
     </LinearLayout>
 
@@ -160,6 +160,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/customColorButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/boder_color_palette"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginRight="5dp"
+            app:srcCompat="@drawable/customcolor" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"

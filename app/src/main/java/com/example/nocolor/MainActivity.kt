@@ -40,12 +40,13 @@ import java.util.Locale
 import kotlin.math.abs
 import android.Manifest
 import androidx.core.graphics.drawable.DrawableCompat
+import com.skydoves.colorpickerview.ColorPickerView
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var pixelArt: Array<IntArray>
-    private lateinit var colors: List<Int>
+   // private lateinit var colors: List<Int>
     private var selectedColorIndex = 0
     private lateinit var pixelGrid: GridView
     private lateinit var pixelAdapter: PixelAdapter
@@ -82,6 +83,8 @@ class MainActivity : AppCompatActivity() {
     private enum class BackgroundStyle {
         PLAIN, LEGO, CROSS
     }
+    // Biến để lưu danh sách màu (đổi từ val sang var để có thể sửa đổi)
+    private var colors: List<Int> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,7 +172,27 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Lấy dữ liệu PixelArt từ Intent
+//        // Lấy dữ liệu PixelArt từ Intent
+//        val pixelArtParcelable = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+//            intent.getParcelableExtra("PIXEL_ART", PixelArtParcelable::class.java)
+//        } else {
+//            @Suppress("DEPRECATION")
+//            intent.getParcelableExtra<PixelArtParcelable>("PIXEL_ART")
+//        }
+//        val pixelArtData = pixelArtParcelable?.toPixelArt()
+//        pixelArt = pixelArtData?.pixelData ?: arrayOf(
+//            intArrayOf(0, 0, 1, 1, 1, 0, 0),
+//            intArrayOf(0, 1, 2, 2, 2, 1, 0),
+//            intArrayOf(1, 2, 3, 3, 3, 2, 1),
+//            intArrayOf(1, 2, 3, 4, 3, 2, 1),
+//            intArrayOf(1, 2, 3, 3, 3, 2, 1),
+//            intArrayOf(0, 1, 2, 2, 2, 1, 0),
+//            intArrayOf(0, 0, 1, 1, 1, 0, 0)
+//        )
+//        colors = pixelArtData?.colors ?: listOf(
+//            Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW
+//        )
+        // Khởi tạo colors từ PixelArtData
         val pixelArtParcelable = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra("PIXEL_ART", PixelArtParcelable::class.java)
         } else {
@@ -186,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             intArrayOf(0, 1, 2, 2, 2, 1, 0),
             intArrayOf(0, 0, 1, 1, 1, 0, 0)
         )
-        colors = pixelArtData?.colors ?: listOf(
+        colors = pixelArtData?.colors?.toMutableList() ?: mutableListOf(
             Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW
         )
 
@@ -370,6 +393,11 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
+        // Thiết lập nút chọn màu tùy chỉnh
+        findViewById<ImageButton>(R.id.customColorButton)?.setOnClickListener {
+            showColorPickerDialog()
+        }
+
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -781,6 +809,42 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+
+    // Hàm hiển thị dialog chọn màu
+    private fun showColorPickerDialog() {
+        val dialog = Dialog(this).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(R.layout.dialog_color_picker)
+            setCancelable(true)
+        }
+
+        val colorPickerView = dialog.findViewById<ColorPickerView>(R.id.colorPickerView)
+        val confirmButton = dialog.findViewById<Button>(R.id.btnConfirmColor)
+        val cancelButton = dialog.findViewById<Button>(R.id.btnCancelColor)
+
+        colorPickerView?.setInitialColor(colors[selectedColorIndex])
+
+        confirmButton?.setOnClickListener {
+            val selectedColor = colorPickerView?.color ?: colors[selectedColorIndex]
+            val mutableColors = colors.toMutableList()
+            mutableColors[selectedColorIndex] = selectedColor
+            colors = mutableColors
+            setupColorPalette()
+            pixelAdapter.notifyDataSetChanged()
+            dialog.dismiss()
+            Toast.makeText(this, "Đã thay đổi màu số ${selectedColorIndex + 1}", Toast.LENGTH_SHORT).show()
+        }
+
+        cancelButton?.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.85).toInt(),
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        dialog.show()
     }
     inner class PixelAdapter : BaseAdapter() {
         var cellSize = 0

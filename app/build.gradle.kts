@@ -49,5 +49,6 @@ dependencies {
 
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
     implementation ("androidx.cardview:cardview:1.0.0")
+    implementation ("com.github.skydoves:colorpickerview:2.3.0")
    // implementation ("org.jetbrains.kotlinx:kotlinx-parcelize:1.3.5")
 }
